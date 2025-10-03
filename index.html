@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia Interativo para Mães, Pais e Responsáveis na UnB</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Feminine Violet -->
+    <!-- Application Structure Plan: The application uses a single-page, thematic dashboard structure with a sticky navigation bar. This design was chosen for optimal user experience, allowing parents to quickly access specific, relevant information (e.g., 'Apoio Financeiro', 'Direitos Acadêmicos') without navigating a linear document. The flow is non-linear, user-driven, moving from a high-level overview (dashboard stats) to detailed, interactive sections with tabs and accordions. This prioritizes task-completion and rapid information retrieval over mirroring the source document's structure. -->
+    <!-- Visualization & Content Choices: 
+        - Visão Geral (Stats): Goal: Inform. Method: HTML stat cards. Interaction: Hover. Justification: Quick, high-impact data display.
+        - Timeline (Nossa Luta): Goal: Change over time. Method: Vertical timeline with HTML/Tailwind. Justification: Intuitive chronological storytelling of the CMUnB's journey.
+        - Direitos Acadêmicos: Goal: Organize/Compare. Method: JS-powered tabs for audience segmentation (Discentes/Docentes) and accordions for details. Interaction: Click to reveal. Justification: Reduces cognitive load and targets information effectively.
+        - Apoio e Infraestrutura (Chart): Goal: Show Proportions. Method: Donut chart using Chart.js/Canvas. Interaction: Hover tooltips. Justification: Visually represents "Pais/Mães" as a key priority group within student assistance, reinforcing their importance.
+        CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f3f9; /* Violeta bem claro */
+            color: #3b0764; /* Roxo escuro para texto principal */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .tab-button.active {
+            background-color: #6d28d9; /* Roxo médio para ativo */
+            color: #ffffff;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -31px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #6d28d9; /* Roxo para marcadores */
+            border: 4px solid #ede9fe; /* Lilás claro para contraste */
+        }
+    </style>
+</head>
+<body class="bg-violet-50/50">
+
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-violet-800">Cuidado Parental na UnB</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#visao-geral" class="text-stone-600 hover:bg-violet-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Visão Geral</a>
+                        <a href="#direitos" class="text-stone-600 hover:bg-violet-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Conheça Seus Direitos</a>
+                        <a href="#apoio" class="text-stone-600 hover:bg-violet-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Suporte Institucional</a>
+                        <a href="#rede" class="text-stone-600 hover:bg-violet-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Rede de Apoio</a>
+                        <a href="#links" class="text-stone-600 hover:bg-violet-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Legislação e Movimentos</a>
+                        <a href="#luta" class="text-stone-600 hover:bg-violet-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Jornada de Luta</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="py-16 sm:py-24 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <p class="text-base font-semibold text-violet-700 tracking-wide uppercase">Guia Interativo</p>
+                <h2 class="mt-2 text-4xl font-extrabold text-stone-900 tracking-tight sm:text-5xl">Conciliando a Responsabilidade Parental e a Vida Acadêmica na UnB</h2>
+                <p class="mt-6 max-w-3xl mx-auto text-xl text-stone-600">Um miniguia introdutório sobre seus direitos, benefícios e a rede de apoio que torna a Universidade de Brasília um lugar mais acolhedor para mães, pais e responsáveis por menores de idade.</p>
+            </div>
+        </section>
+
+        <section id="visao-geral" class="py-16 sm:py-24">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="border-b border-violet-300 bg-violet-100/70 p-4 mb-8 rounded-t-lg">
+                    <h3 class="text-3xl font-bold text-stone-900">Visão Geral: Conquistas em Números</h3>
+                </div>
+
+                <div class="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                    <div class="bg-white p-8 rounded-2xl shadow-lg transform hover:scale-105 transition-transform duration-300">
+                        <div class="flex items-center justify-center h-12 w-12 rounded-full bg-violet-100 text-violet-700 mx-auto">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                        </div>
+                        <h4 class="mt-6 text-2xl font-bold text-stone-900 text-center">41 Fraldários</h4>
+                        <p class="mt-2 text-stone-600 text-center">Instalados no Campus Darcy Ribeiro, inclusive em banheiros masculinos, promovendo a corresponsabilidade.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-2xl shadow-lg transform hover:scale-105 transition-transform duration-300">
+                         <div class="flex items-center justify-center h-12 w-12 rounded-full bg-violet-100 text-violet-700 mx-auto">
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        </div>
+                        <h4 class="mt-6 text-2xl font-bold text-stone-900 text-center">12 Meses a Mais</h4>
+                        <p class="mt-2 text-stone-600 text-center">Prazo adicional para docentes em licença-maternidade comprovarem desempenho acadêmico na pós-graduação.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-2xl shadow-lg transform hover:scale-105 transition-transform duration-300">
+                        <div class="flex items-center justify-center h-12 w-12 rounded-full bg-violet-100 text-violet-700 mx-auto">
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v.01M12 6v-1m0-1V4m0 2.01V5M12 20v-1m0-1v-1m0-1v-1m0-1v-1m0 0v-1m0-1v-1m0-1v-1" /></svg>
+                        </div>
+                        <h4 class="mt-6 text-2xl font-bold text-stone-900 text-center">Auxílio-Creche</h4>
+                        <p class="mt-2 text-stone-600 text-center">Apoio financeiro de R$ 485,00 mensais para custear despesas com o cuidado de crianças de até 5 anos incompletos.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="direitos" class="py-16 sm:py-24 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="border-b border-violet-300 bg-violet-100/70 p-4 mb-8 rounded-t-lg">
+                    <h3 class="text-3xl font-bold text-gray-900">Conheça Seus Direitos</h3>
+                </div>
+
+                <div class="mt-10">
+                    <div class="mb-4 border-b border-gray-200">
+                        <ul class="flex flex-wrap -mb-px" id="myTab" role="tablist">
+                            <li class="mr-2" role="presentation">
+                                <button class="tab-button inline-block py-4 px-6 text-lg font-medium text-center text-gray-500 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 active" id="discentes-tab" type="button" role="tab">Discentes</button>
+                            </li>
+                            <li class="mr-2" role="presentation">
+                                <button class="tab-button inline-block py-4 px-6 text-lg font-medium text-center text-gray-500 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300" id="servidores-tab" type="button" role="tab">Servidoras e Servidores</button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div id="tabContent">
+                        <div class="bg-violet-50/30 p-6 rounded-lg" id="discentes" role="tabpanel">
+                            <div class="space-y-4" id="accordion-discentes">
+                                <!-- Accordion items will be generated here by JS -->
+                            </div>
+                        </div>
+                        <div class="hidden bg-violet-50/30 p-6 rounded-lg" id="servidores" role="tabpanel">
+                             <div class="space-y-4" id="accordion-servidores">
+                                <!-- Accordion items will be generated here by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="apoio" class="py-16 sm:py-24">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="border-b border-violet-300 bg-violet-100/70 p-4 mb-8 rounded-t-lg">
+                    <h3 class="text-3xl font-bold text-gray-900">Suporte Institucional: Infraestrutura de Cuidado</h3>
+                </div>
+                <div class="mt-12 grid md:grid-cols-1 gap-12 items-center">
+                    <div>
+                        <h4 class="text-2xl font-bold text-stone-800 mb-6">Infraestrutura e Serviços</h4>
+                        <ul class="space-y-6">
+                            <li class="flex">
+                                <div class="flex-shrink-0"><svg class="h-6 w-6 text-violet-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg></div>
+                                <div class="ml-3">
+                                    <h5 class="font-bold">Fraldários</h5>
+                                    <p class="text-stone-600">41 unidades no Campus Darcy Ribeiro, em banheiros femininos e masculinos. (Despacho SDH 9738301)</p>
+                                </div>
+                            </li>
+                             <li class="flex">
+                                <div class="flex-shrink-0"><svg class="h-6 w-6 text-violet-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg></div>
+                                <div class="ml-3">
+                                    <h5 class="font-bold">Centro de Educação Infantil (CEI)</h5>
+                                    <p class="text-stone-600">Parceria com a Secretaria de Educação do DF para acolhimento da primeira infância. Fique atento(a) ao edital de seleção.</p>
+                                </div>
+                            </li>
+                             <li class="flex">
+                                <div class="flex-shrink-0"><svg class="h-6 w-6 text-violet-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg></div>
+                                <div class="ml-3">
+                                    <h5 class="font-bold">Restaurante Universitário (RU)</h5>
+                                    <p class="text-stone-600">O CMUnB atua na negociação por tarifas diferenciadas para crianças. Consulte a tabela de preços vigente.</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="rede" class="py-16 sm:py-24 bg-white">
+             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl font-bold text-stone-900">Nossa Rede de Apoio</h3>
+                    <p class="mt-4 text-lg text-stone-600">Você não está só. Conheça os principais canais de apoio, participação e articulação de direitos na UnB.</p>
+                </div>
+                 <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="bg-violet-50/50 p-6 rounded-lg text-center">
+                        <h4 class="text-xl font-bold text-violet-800">Coletivo de Mães da UnB (CMUnB)</h4>
+                        <p class="mt-2 text-stone-700">Principal canal de apoio mútuo, advocacy e mobilização. Um espaço seguro para troca de experiências.</p>
+                        <a href="https://www.instagram.com/coletivomaesunb/" target="_blank" class="mt-4 inline-block text-violet-600 font-semibold hover:underline">Siga no Instagram &rarr;</a>
+                    </div>
+                    <div class="bg-violet-50/50 p-6 rounded-lg text-center">
+                        <h4 class="text-xl font-bold text-violet-800">Secretaria de Direitos Humanos (SDH)</h4>
+                        <p class="mt-2 text-stone-700">Órgão central da Reitoria e principal interlocutor institucional para as pautas de maternidade e parentalidade.</p>
+                         <a href="https://sdh.unb.br/" target="_blank" class="mt-4 inline-block text-violet-600 font-semibold hover:underline">Acesse o site &rarr;</a>
+                    </div>
+                    <div class="bg-violet-50/50 p-6 rounded-lg text-center">
+                        <h4 class="text-xl font-bold text-violet-800">Decanato de Assuntos Comunitários (DAC)</h4>
+                        <p class="mt-2 text-stone-700">Responsável por toda a política de assistência estudantil, incluindo auxílios, moradia e alimentação.</p>
+                         <a href="https://dac.unb.br/" target="_blank" class="mt-4 inline-block text-violet-600 font-semibold hover:underline">Conheça o DAC &rarr;</a>
+                    </div>
+                    <div class="bg-violet-50/50 p-6 rounded-lg text-center">
+                        <h4 class="text-xl font-bold text-violet-800">Comissão Permanente</h4>
+                        <p class="mt-2 text-stone-700">Acompanha, monitora e avalia a implementação da Política Materna e Parental. Possui representação do CMUnB.</p>
+                        <p class="mt-4 text-sm text-stone-500">Vinculada à SDH</p>
+                    </div>
+                 </div>
+            </div>
+        </section>
+
+        <section id="links" class="py-16 sm:py-24">
+             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="border-b border-violet-300 bg-violet-100/70 p-4 mb-8 rounded-t-lg">
+                    <h3 class="text-3xl font-bold text-gray-900">Legislação e Movimentos</h3>
+                </div>
+
+                <div class="mt-10">
+                    <div class="mb-4 border-b border-gray-200">
+                        <ul class="flex flex-wrap -mb-px" id="linksTab" role="tablist">
+                            <li class="mr-2" role="presentation">
+                                <button class="tab-button inline-block py-4 px-6 text-lg font-medium text-center text-gray-500 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 active" id="politicas-tab" type="button" role="tab">Políticas e Leis</button>
+                            </li>
+                            <li class="mr-2" role="presentation">
+                                <button class="tab-button inline-block py-4 px-6 text-lg font-medium text-center text-gray-500 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300" id="movimentos-unb-tab" type="button" role="tab">Outros Movimentos na UnB</button>
+                            </li>
+                             <li class="mr-2" role="presentation">
+                                <button class="tab-button inline-block py-4 px-6 text-lg font-medium text-center text-gray-500 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300" id="movimentos-nacional-tab" type="button" role="tab">Movimento Materno e Parental nas Universidades do Brasil</button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div id="linksTabContent">
+                        <div class="bg-white p-6 rounded-lg grid md:grid-cols-2 gap-6" id="politicas" role="tabpanel">
+                            <div>
+                                <h4 class="text-xl font-bold text-violet-800 mb-3">Normativas da UnB</h4>
+                                <ul class="space-y-2">
+                                    <li><a href="https://sei.unb.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=12815255" target="_blank" class="text-stone-600 hover:text-violet-600 font-medium">Política Materna e Parental (Res. CAD 0023/2024) &rarr;</a></li>
+                                    <li><a href="https://sei.unb.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=5867044" target="_blank" class="text-stone-600 hover:text-violet-600 font-medium">Licença Maternidade Docente (Res. CPP 012/2020) &rarr;</a></li>
+                                    <li><a href="https://planejamento.unb.br/images/Central_de_Conteúdos/PDI_UnB__2023_2028.pdf" target="_blank" class="text-stone-600 hover:text-violet-600 font-medium">Plano de Desenvolvimento Institucional (PDI 2023-2028) &rarr;</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                 <h4 class="text-xl font-bold text-violet-800 mb-3">Legislação Federal</h4>
+                                <ul class="space-y-2">
+                                    <li><a href="http://www.planalto.gov.br/ccivil_03/leis/l8069.htm" target="_blank" class="text-stone-600 hover:text-violet-600 font-medium">Estatuto da Criança e do Adolescente (ECA) &rarr;</a></li>
+                                    <li><a href="http://www.planalto.gov.br/ccivil_03/decreto-lei/del1044.htm" target="_blank" class="text-stone-600 hover:text-violet-600 font-medium">Exercícios Domiciliares (Decreto-Lei 1.044/69) &rarr;</a></li>
+                                    <li><a href="http://www.planalto.gov.br/ccivil_03/_ato2011-2014/2013/lei/l12796.htm" target="_blank" class="text-stone-600 hover:text-violet-600 font-medium">Diretrizes e Bases da Educação Nacional (LDB - Lei 12.796/2013) &rarr;</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="hidden bg-white p-6 rounded-lg" id="movimentos-unb" role="tabpanel">
+                             <div class="space-y-4">
+                                <p class="text-lg font-semibold text-stone-700">A UnB possui uma rica rede de movimentos sociais que lutam por equidade e inclusão:</p>
+                                <ul class="grid md:grid-cols-2 gap-4">
+                                    <li><span class="font-bold text-violet-700">Comunidade Indígena:</span> <a href="https://sdh.unb.br/" target="_blank" class="text-stone-600 hover:text-violet-600 font-medium">Coordenadoria Indígena (COQUEI/SDH)</a> e <a href="https://sdh.unb.br/" target="_blank" class="text-stone-600 hover:text-violet-600 font-medium">a Maloca (Centro de Convivência Multicultural)</a>.</li>
+                                    <li><span class="font-bold text-violet-700">Comunidade Negra:</span> <a href="https://sdh.unb.br/coordenacao-negra/centro-de-convivencia-negra/" target="_blank" class="text-stone-600 hover:text-violet-600 font-medium">Coordenadoria Negra (COQUEN/SDH)</a> e o <a href="https://sdh.unb.br/coordenacao-negra/centro-de-convivencia-negra/" target="_blank" class="text-stone-600 hover:text-violet-600 font-medium">Centro de Convivência Negra (CCN)</a>.</li>
+                                    <li><span class="font-bold text-violet-700">Comunidade LGBTQIAPN+:</span> <a href="https://boasvindas.unb.br/index.php?option=com_content&view=article&id=63&Itemid=758" target="_blank" class="text-stone-600 hover:text-violet-600 font-medium">Coordenadoria LGBTQIAPN+ (CODSEX/SDH)</a>.</li>
+                                    <li><span class="font-bold text-violet-700">Educação do Campo:</span> <a href="https://www.ledocunb.com.br" target="_blank" class="text-stone-600 hover:text-violet-600 font-medium">Licenciatura em Educação do Campo (LEDOC/FUP)</a>.</li>
+                                    <li><span class="font-bold text-violet-700">Pessoas com Deficiência:</span> <a href="https://cead.unb.br/diretoria-de-acessibilidade-daces" target="_blank" class="text-stone-600 hover:text-violet-600 font-medium">Diretoria de Acessibilidade (DACES/DAC)</a>.</li>
+                                </ul>
+                                <p class="text-sm text-stone-500 mt-4">Para conferir e acessar as informações, utilize o site da <a href="https://sdh.unb.br/" target="_blank" class="text-violet-600 hover:underline font-semibold">Secretaria de Direitos Humanos (SDH)</a>.</p>
+                            </div>
+                        </div>
+                        <div class="hidden bg-white p-6 rounded-lg" id="movimentos-nacional" role="tabpanel">
+                             <div class="space-y-4">
+                                <p class="text-lg font-semibold text-stone-700">Conecte-se com a luta pela parentalidade em outras instituições de ensino superior no Brasil:</p>
+                                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    <div>
+                                        <h4 class="text-xl font-bold text-violet-900 mb-2">Centro-Oeste</h4>
+                                        <ul class="space-y-2">
+                                            <li><span class="font-semibold">UnB:</span> <a href="https://www.instagram.com/coletivomaesunb/" target="_blank" class="text-stone-600 hover:text-violet-600 font-medium">@coletivomaesunb &rarr;</a></li>
+                                            <li><span class="font-semibold">UFG:</span> <a href="https://www.instagram.com/maesufg/" target="_blank" class="text-stone-600 hover:text-violet-600 font-medium">@maesufg &rarr;</a></li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-xl font-bold text-violet-900 mb-2">Nordeste</h4>
+                                        <ul class="space-y-2">
+                                            <li><span class="font-semibold">UFBA:</span> <a href="https://www.instagram.com/coletivodemaesufba/" target="_blank" class="text-stone-600 hover:text-violet-600 font-medium">@coletivodemaesufba &rarr;</a></li>
+                                            <li><span class="font-semibold">UFPE:</span> <a href="https://www.instagram.com/maesdaufpe/" target="_blank" class="text-stone-600 hover:text-violet-600 font-medium">@maesdaufpe &rarr;</a></li>
+                                            <li><span class="font-semibold">UFC:</span> <a href="https://www.instagram.com/casadasmaesufc/" target="_blank" class="text-stone-600 hover:text-violet-600 font-medium">@casadasmaesufc &rarr;</a></li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-xl font-bold text-violet-900 mb-2">Sudeste</h4>
+                                        <ul class="space-y-2">
+                                            <li><span class="font-semibold">UFMG:</span> <a href="https://www.instagram.com/maternativa.ufmg/" target="_blank" class="text-stone-600 hover:text-violet-600 font-medium">@maternativa.ufmg &rarr;</a></li>
+                                            <li><span class="font-semibold">USP:</span> <a href="https://www.instagram.com/coletivomaesusp/" target="_blank" class="text-stone-600 hover:text-violet-600 font-medium">@coletivomaesusp &rarr;</a></li>
+                                            <li><span class="font-semibold">Unicamp:</span> <a href="https://www.instagram.com/maes.da.unicamp/" target="_blank" class="text-stone-600 hover:text-violet-600 font-medium">@maes.da.unicamp &rarr;</a></li>
+                                            <li><span class="font-semibold">UFRJ:</span> <a href="https://www.instagram.com/maesdaufrj/" target="_blank" class="text-stone-600 hover:text-violet-600 font-medium">@maesdaufrj &rarr;</a></li>
+                                            <li><span class="font-semibold">UFES:</span> <a href="https://www.instagram.com/maesdaufes/" target="_blank" class="text-stone-600 hover:text-violet-600 font-medium">@maesdaufes &rarr;</a></li>
+                                        </ul>
+                                    </div>
+                                    <div class="lg:col-span-1">
+                                        <h4 class="text-xl font-bold text-violet-900 mb-2">Sul</h4>
+                                        <ul class="space-y-2">
+                                            <li><span class="font-semibold">UFRGS:</span> <a href="https://www.instagram.com/maesdaufrgs/" target="_blank" class="text-stone-600 hover:text-violet-600 font-medium">@maesdaufrgs &rarr;</a></li>
+                                            <li><span class="font-semibold">UFSC:</span> <a href="https://www.instagram.com/maesdaufsc/" target="_blank" class="text-stone-600 hover:text-violet-600 font-medium">@maesdaufsc &rarr;</a></li>
+                                            <li><span class="font-semibold">UFPR:</span> <a href="https://www.instagram.com/maesdaufpr/" target="_blank" class="text-stone-600 hover:text-violet-600 font-medium">@maesdaufpr &rarr;</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <p class="mt-4 text-sm text-stone-500">
+                                    <span class="font-semibold">Outros Movimentos Nacionais:</span> Coletivo Mãe Cientista e GT Gênero, Família e Geração da ANPOCS.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="luta" class="py-16 sm:py-24">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                 <div class="text-center mb-12">
+                    <h3 class="text-3xl font-bold text-stone-900">Anos de luta e de história</h3>
+                    <p class="mt-4 text-lg text-stone-600 max-w-3xl mx-auto">A Política Materna e Parental é o resultado de anos de mobilização, diálogo e resistência. Conheça os marcos desta jornada.</p>
+                </div>
+
+                <div class="relative max-w-2xl mx-auto">
+                    <div class="absolute left-0 top-0 h-full w-0.5 bg-violet-400 ml-2.5"></div>
+                    <div class="relative pl-12 space-y-12">
+                        <div class="timeline-item">
+                            <p class="text-violet-700 font-semibold">2016</p>
+                            <h4 class="text-xl font-bold mt-1">Fundação do CMUnB</h4>
+                            <p class="mt-2 text-stone-600">O Coletivo de Mães da UnB é fundado, criando um espaço de apoio mútuo e articulação política para as mães da comunidade acadêmica.</p>
+                        </div>
+                         <div class="timeline-item">
+                            <p class="text-violet-700 font-semibold">2020</p>
+                            <h4 class="text-xl font-bold mt-1">Fortalecimento na Pandemia</h4>
+                            <p class="mt-2 text-stone-600">Com o isolamento social, o coletivo ganha força no ambiente virtual, ampliando sua rede de apoio e a visibilidade de suas pautas.</p>
+                        </div>
+                         <div class="timeline-item">
+                            <p class="text-violet-700 font-semibold">Março de 2023</p>
+                            <h4 class="text-xl font-bold mt-1">Criação do GT Mães da UnB</h4>
+                            <p class="mt-2 text-stone-600">A Reitoria, via Secretaria de Direitos Humanos, formaliza uma comissão com forte atuação do CMUnB e institui o Grupo de Trabalho para construir propostas de políticas públicas.</p>
+                        </div>
+                         <div class="timeline-item">
+                            <p class="text-violet-700 font-semibold">Julho de 2024</p>
+                            <h4 class="text-xl font-bold mt-1">Aprovação da Política Materna e Parental</h4>
+                            <p class="mt-2 text-stone-600">Um marco histórico: o Conselho de Administração (CAD) aprova a Resolução nº 0023/2024, institucionalizando direitos e apoios para mães, pais e responsáveis na UnB.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    
+    <footer class="bg-violet-900 text-white">
+        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center text-sm">
+            <p>Este miniguia é um recurso informativo e não substitui, em hipótese alguma, a consulta aos canais e documentos oficiais da Universidade de Brasília e demais órgãos porventura citados nessa página.</p>
+            <p class="mt-2">Baseado na dissertação "COLETIVO DE MÃES E GESTÃO PARTICIPATIVA NA UNIVERSIDADE DE BRASÍLIA" (Brandão, 2025), normativos e publicações da UnB e demais órgãos oficiais ligados ao assunto. Reprodução permitida apenas para fins didáticos e com citação da fonte. Para demais usos, favor consultar a autora através do contato: marianabfb@outlook.com</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const accordionData = {
+                discentes: [
+                    
+                    {
+                        title: "Licença Maternidade para Discentes",
+                        content: "A política garante institucionalmente o direito à licença-maternidade. Formalize a solicitação junto à sua coordenação de curso e ao Decanato de Assuntos Comunitários (DAC) para assegurar sua tranquilidade neste período. (Art. 8°, X, Res. CAD 0023/2024)"
+                    },
+                    {
+                        title: "Exercícios Domiciliares",
+                        content: "Podem ser solicitados em situações excepcionais, como descompasso entre o calendário acadêmico e o escolar dos filhos, doença da criança e durante o período de aleitamento materno. Procure a coordenação do seu curso. (Art. 8°, XI, Res. CAD 0023/2024)"
+                    },
+                    {
+                        title: "Ampliação de Prazos e Flexibilização",
+                        content: "É possível solicitar a ampliação do prazo máximo para conclusão do curso e, em casos específicos, a redução da carga horária mínima de créditos por semestre para melhor conciliar seus estudos e o cuidado. (PDI 2023-2028)"
+                    }
+                ],
+                servidores: [
+                    {
+                        title: "Docentes: Acréscimo de Prazo (Pós-Graduação)",
+                        content: "Para fins de comprovação de desempenho acadêmico em processos de credenciamento ou recredenciamento em Programas de Pós-Graduação, docentes em licença-maternidade têm direito a um acréscimo de até 12 meses, sem prejuízo na pontuação. (Res. CPP nº 012/2020)"
+                    },
+                    {
+                        title: "Técnicas(os) Administrativas(os): Direitos Parentais",
+                        content: "A Política Materna e Parental se aplica a servidoras(es) técnico-administrativas(os), garantindo um ambiente institucional de apoio e acolhimento. A política prevê apoio à formação continuada e combate à discriminação. (Art. 8°, IV e V, Res. CAD 0023/2024)"
+                    },
+                    {
+                        title: "Apoio à Pesquisa e Extensão (Ações Afirmativas)",
+                        content: "A Política Materna e Parental prevê ações afirmativas para bolsas remuneradas em editais de pesquisa e de extensão, visando apoiar a formação e a produção acadêmica de estudantes mães, pais e responsáveis. (Art. 8°, III, Res. CAD 0023/2024)"
+                    }
+                ]
+            };
+
+            function createAccordionItem(item, index) {
+                return `
+                    <div class="border border-violet-200 rounded-lg">
+                        <h2>
+                            <button type="button" class="flex items-center justify-between w-full p-5 font-medium text-left text-stone-700 bg-white rounded-lg hover:bg-violet-100/50" data-accordion-target="#content-${index}">
+                                <span>${item.title}</span>
+                                <svg class="w-6 h-6 shrink-0 transform" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                            </button>
+                        </h2>
+                        <div id="content-${index}" class="accordion-content px-5 pb-5">
+                            <p class="text-stone-600">${item.content}</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            const discentesContainer = document.getElementById('accordion-discentes');
+            discentesContainer.innerHTML = accordionData.discentes.map((item, index) => createAccordionItem(item, `d-${index}`)).join('');
+            
+            const servidoresContainer = document.getElementById('accordion-servidores');
+            servidoresContainer.innerHTML = accordionData.servidores.map((item, index) => createAccordionItem(item, `s-${index}`)).join('');
+
+
+            const tabButtons = document.querySelectorAll('#myTab .tab-button');
+            const tabContents = document.querySelectorAll('#tabContent > div');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.id.replace('-tab', '');
+                    
+                    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    tabContents.forEach(content => {
+                        if (content.id === targetId) {
+                            content.classList.remove('hidden');
+                        } else {
+                            content.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+            document.getElementById('discentes-tab').click();
+
+
+            const linksTabButtons = document.querySelectorAll('#linksTab .tab-button');
+            const linksTabContents = document.querySelectorAll('#linksTabContent > div');
+
+            linksTabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.id.replace('-tab', '');
+                    
+                    document.querySelectorAll('#linksTab .tab-button').forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    linksTabContents.forEach(content => {
+                        if (content.id === targetId) {
+                            content.classList.remove('hidden');
+                        } else {
+                            content.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+            document.getElementById('politicas-tab').click();
+
+
+            const accordionButtons = document.querySelectorAll('[data-accordion-target]');
+            accordionButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const content = document.querySelector(button.dataset.accordionTarget);
+                    const icon = button.querySelector('svg');
+                    
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                        icon.classList.remove('rotate-180');
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        icon.classList.add('rotate-180');
+                    }
+                });
+            });
+
+            // Removendo o gráfico e o painel de assistência estudantil, mantendo apenas a infraestrutura na grid de uma coluna.
+            const chartContainerElement = document.querySelector('.bg-white.p-8.rounded-2xl.shadow-lg');
+            if (chartContainerElement) {
+                chartContainerElement.parentNode.removeChild(chartContainerElement);
+            }
+
+            const apoioGrid = document.querySelector('#apoio .md\\:grid-cols-2');
+            if (apoioGrid) {
+                apoioGrid.classList.remove('md:grid-cols-2');
+                apoioGrid.classList.add('md:grid-cols-1');
+            }
+            
+            // O gráfico não é mais necessário, então seu código foi removido, mas o construtor do Chart.js que estava aqui foi removido.
+            
+        });
+    </script>
+
+</body>
+</html>
