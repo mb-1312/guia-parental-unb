@@ -71,7 +71,7 @@
                 </div>
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-4">
-                        <!-- REMOVIDO: Visão Geral -->
+                        <!-- Visão Geral foi removida. -->
                         <a href="#direitos" class="text-stone-600 hover:bg-violet-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Conheça Seus Direitos</a>
                         <a href="#apoio" class="text-stone-600 hover:bg-violet-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Cuidado</a>
                         <a href="#rede" class="text-stone-600 hover:bg-violet-600 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Rede de Apoio</a>
@@ -92,7 +92,7 @@
             </div>
         </section>
 
-        <!-- REMOVIDO: Seção Visão Geral -->
+        <!-- A seção Visão Geral foi removida. -->
 
         <section id="direitos" class="py-16 sm:py-24 bg-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -126,6 +126,7 @@
                             </div>
                         </div>
                         <div class="hidden bg-violet-50/30 p-6 rounded-lg" id="legislacoes" role="tabpanel">
+                            <!-- CONTEÚDO CORRIGIDO: Esta seção agora contém apenas o conteúdo legislativo movido. -->
                              <div class="grid md:grid-cols-2 gap-6">
                                 <div>
                                     <h4 class="text-xl font-bold text-violet-800 mb-3">Normativas da UnB</h4>
@@ -410,7 +411,8 @@
                     }
                 ]
             };
-
+            
+            // CONTEÚDO LEGISLAÇÕES (MOVIDO DA SEÇÃO #links)
             const legislacoesContent = `
                 <div class="grid md:grid-cols-2 gap-6">
                     <div>
@@ -454,7 +456,7 @@
             const servidoresContainer = document.getElementById('accordion-servidores');
             servidoresContainer.innerHTML = accordionData.servidores.map((item, index) => createAccordionItem(item, `s-${index}`)).join('');
 
-            // Adiciona a nova aba Legislações ao DOM
+            // CRIAÇÃO E INSERÇÃO DA ABA LEGISLAÇÕES (CONTEÚDO MOVIDO DA SEÇÃO #LINKS)
             const legislacoesContainer = document.createElement('div');
             legislacoesContainer.classList.add('hidden', 'bg-violet-50/30', 'p-6', 'rounded-lg');
             legislacoesContainer.id = 'legislacoes';
@@ -462,7 +464,7 @@
             legislacoesContainer.innerHTML = legislacoesContent;
             document.getElementById('tabContent').appendChild(legislacoesContainer);
 
-
+            // INICIALIZAÇÃO E CONTROLE DAS ABAS PRINCIPAIS
             const tabButtons = document.querySelectorAll('#myTab .tab-button');
             const tabContents = document.querySelectorAll('#tabContent > div');
 
@@ -504,7 +506,7 @@
                     });
                 });
             });
-            document.getElementById('movimentos-unb-tab').click(); // Altera o clique inicial para 'Comunidades na UnB'
+            document.getElementById('movimentos-unb-tab').click(); // Inicializa em Comunidades na UnB
 
 
             const accordionButtons = document.querySelectorAll('[data-accordion-target]');
@@ -523,7 +525,7 @@
                 });
             });
 
-            // Código de inicialização e remoção de elementos (permanece como o último estado)
+            // Removendo o gráfico e o painel de assistência estudantil (mantido do estado anterior)
             const chartContainerElement = document.querySelector('.bg-white.p-8.rounded-2xl.shadow-lg');
             if (chartContainerElement) {
                 chartContainerElement.parentNode.removeChild(chartContainerElement);
